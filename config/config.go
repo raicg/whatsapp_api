@@ -2,8 +2,8 @@ package config
 
 import ()
 
-// here are the folders where the groups, text messages, images, videos or documents csv will be saved
-// the folders must end with '/' like: '/home/user/Desktop/chat/' or just '/' to save on the same folder as the script
+// here are the folders where the groups, text messages, images, videos, audios or documents csv will be saved
+// the folders must end with "/" like: "/home/user/Desktop/chat/" or be empty like "" to save on the same folder as the script
 
 var TextsFolder = "/home/raicg/Desktop/chat/texts/"
 var GroupsFolder = "/home/raicg/Desktop/chat/groups/"

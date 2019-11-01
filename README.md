@@ -14,6 +14,8 @@ try: https://github.com/canha/golang-tools-install-script
 1. `$ go get github.com/Rhymen/go-whatsapp`
 1. `$ go get github.com/Baozisoftware/qrcode-terminal-go`
 1. `$ go get github.com/tushar2708/altcsv`
+1. Then edit the variables in `config/config.go` with the correct path to your folders. (follow the instructions inside the file)
+
 
 ## Running
 
