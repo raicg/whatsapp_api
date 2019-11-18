@@ -31,6 +31,31 @@ func main() {
 		log.Fatalf("error logging in: %v\n", err)
 	}
 
+	go func() {
+		var text, phone string
+		fmt.Print(`Intructions: You will enter the text and the phone number (like: "text example" "5584998765432") if you want to send a message;`+"\n")
+		fmt.Print("phone number is just number, so dont have the + sign.\n")
+		for {
+			fmt.Print("Enter the text and the phone number: \n")
+			_, err := fmt.Scanf("%q", &text)
+			_, err = fmt.Scanf("%q \n", &phone)
+			msg := whatsapp.TextMessage{
+				Info: whatsapp.MessageInfo{
+					RemoteJid:     phone + "@s.whatsapp.net",
+				},
+				Text: text,
+			}
+		
+			msgId, err := wac.Send(msg)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error sending message: %v", err)
+				os.Exit(1)
+			} else {
+				fmt.Println("Message Sent -> ID : " + msgId)
+			}
+		}
+	}()
+
 	//verifies phone connectivity
 	pong, err := wac.AdminTest()
 
@@ -77,7 +102,6 @@ func (w *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
 	}
 	
 	createTextCsv(phone, message)
-	fmt.Printf("%v %v %v %v\n\t%v\n", strconv.FormatUint(message.Info.Timestamp, 10), message.Info.Id, message.Info.RemoteJid, message.Info.QuotedMessageID, message.Text)
 }
 
 // Example for media handling. Video, Audio, Document are also possible in the same way

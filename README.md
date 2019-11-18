@@ -21,3 +21,11 @@ try: https://github.com/canha/golang-tools-install-script
 
 1. `$ go run main.go`
 
+## Login
+1. To login you just need to read the QR code using the whatsapp on your device, you will connect it through the whatsapp web function.
+
+## Receiving Messages
+1. To receive the messages you just need to configure the variables in `config/config.go`, as requested on the setup project section, so you will receive the messages in csv format and the attachments.
+
+## Sending Messages
+1. To send a message you just need to enter the text and the phone number, like: `"text example" "5584998765432"` on the terminal.
