@@ -32,28 +32,7 @@ func main() {
 	}
 
 	go func() {
-		var text, phone string
-		fmt.Print(`Intructions: You will enter the text and the phone number (like: "text example" "5584998765432") if you want to send a message;`+"\n")
-		fmt.Print("phone number is just number, so dont have the + sign.\n")
-		for {
-			fmt.Print("Enter the text and the phone number: \n")
-			_, err := fmt.Scanf("%q", &text)
-			_, err = fmt.Scanf("%q \n", &phone)
-			msg := whatsapp.TextMessage{
-				Info: whatsapp.MessageInfo{
-					RemoteJid:     phone + "@s.whatsapp.net",
-				},
-				Text: text,
-			}
-		
-			msgId, err := wac.Send(msg)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error sending message: %v", err)
-				os.Exit(1)
-			} else {
-				fmt.Println("Message Sent -> ID : " + msgId)
-			}
-		}
+		sendMessage(wac)
 	}()
 
 	//verifies phone connectivity
@@ -96,9 +75,9 @@ func (w *waHandler) HandleTextMessage(message whatsapp.TextMessage) {
 	if strings.Contains(message.Info.RemoteJid, "@s.whatsapp.net"){
 		phone = strings.Replace(message.Info.RemoteJid, "@s.whatsapp.net", "", 1)
 	} else {
-		group_data, err := w.c.GetGroupMetaData(message.Info.RemoteJid)
+		groupData, err := w.c.GetGroupMetaData(message.Info.RemoteJid)
 		_ = err
-		createGroupCsv(<- group_data, message)
+		createGroupCsv(<- groupData, message)
 	}
 	
 	createTextCsv(phone, message)
@@ -237,12 +216,12 @@ func createTextCsv(phone string, message whatsapp.TextMessage) {
 	file.Close()
 }
 
-func createGroupCsv(group_data string, message whatsapp.TextMessage) {
+func createGroupCsv(groupData string, message whatsapp.TextMessage) {
 	file, _ := os.Create(config.GroupsFolder + message.Info.RemoteJid + ".csv")
 	csvWtr := altcsv.NewWriter(file)
 	csvWtr.Quote = '\''
 	csvWtr.AllQuotes = true
-	csvWtr.Write([]string{message.Info.RemoteJid, "{" + group_data[1 : len(group_data)-1] + "}"})
+	csvWtr.Write([]string{message.Info.RemoteJid, "{" + groupData[1 : len(groupData)-1] + "}"})
 	csvWtr.Flush()
 	file.Close()
 }
@@ -285,4 +264,54 @@ func createDocumentCsv(message whatsapp.DocumentMessage) {
 	csvWtr.Write([]string{message.Info.Id, strconv.FormatUint(message.Info.Timestamp, 10), message.Info.RemoteJid, message.Title, message.FileName})
 	csvWtr.Flush()
 	file.Close()
+}
+
+func sendMessage(wac *whatsapp.Conn) {
+	var text, to, toType string
+	for {
+		fmt.Print("Enter the text, contact/group and the phone_number/group_id: \n")
+		_, err := fmt.Scanf("%q", &text)
+		_, err = fmt.Scanf("%q", &toType)
+		_, err = fmt.Scanf("%q \n", &to)
+		_ = err
+		if toType == "contact"{
+			sendMessageContact(wac, text, to)
+		} else if toType == "group" {
+			sendMessageGroup(wac, text, to)
+		}
+	}
+}
+
+func sendMessageContact(wac *whatsapp.Conn, text string, phone string) {
+	msg := whatsapp.TextMessage{
+		Info: whatsapp.MessageInfo{
+			RemoteJid:     phone + "@s.whatsapp.net",
+		},
+		Text: text,
+	}
+
+	msgId, err := wac.Send(msg)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error sending message: %v", err)
+		os.Exit(1)
+	} else {
+		fmt.Println("Message Sent -> ID : " + msgId)
+	}
+}
+
+func sendMessageGroup(wac *whatsapp.Conn, text string, groupId string) {
+	msg := whatsapp.TextMessage{
+		Info: whatsapp.MessageInfo{
+			RemoteJid:     groupId + "@g.us",
+		},
+		Text: text,
+	}
+
+	msgId, err := wac.Send(msg)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error sending message: %v", err)
+		os.Exit(1)
+	} else {
+		fmt.Println("Message Sent -> ID : " + msgId)
+	}
 }
