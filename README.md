@@ -28,4 +28,4 @@ try: https://github.com/canha/golang-tools-install-script
 1. To receive the messages you just need to configure the variables in `config/config.go`, as requested on the setup project section, so you will receive the messages in csv format and the attachments.
 
 ## Sending Messages
-1. To send a message you just need to enter the text and the phone number, like: `"text example" "5584998765432"` on the terminal.
+1. To send a message you just need to enter the text, "contact" or "group" and the phone number without + sign or group id without @g.us, like: `"text example" "contact" "5584998765432"` or `"text example" "group" "557392152628-1538763567"` on the terminal.
